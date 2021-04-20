@@ -49,3 +49,58 @@ describe("total likes", () => {
     expect(result).toBe(10);
   });
 });
+
+describe("favorite blogs", () => {
+  const listWithEmptyBlogs = [];
+  const listWithOneBlog = [
+    {
+      _id: "2gtgh5hfr5g1gr15r1gh11",
+      title: "Blog with 5 likes",
+      author: "User 1",
+      likes: 5,
+    },
+  ];
+  const listWithManyBlogs = [
+    {
+      _id: "2gtgh5hfr5g1gr15r1gh11",
+      title: "Blog with 5 likes",
+      author: "User 1",
+      likes: 5,
+    },
+    {
+      _id: "5a422tyb54a676234d17f8",
+      title: "Blog with High likes ",
+      author: "Top user",
+      likes: 7,
+    },
+    {
+      _id: "5a422tyb54a676234d17f8",
+      title: "Blog with lowes likes",
+      author: "Lowes likes user",
+      likes: 2,
+    },
+  ];
+
+  test("of empty list is zero", () => {
+    const result = listHelper.favoriteBlog(listWithEmptyBlogs);
+    expect(result).toEqual([]);
+  });
+
+  test("when list has only one blog", () => {
+    const result = listHelper.favoriteBlog(listWithOneBlog);
+    expect(result).toEqual({
+      title: "Blog with 5 likes",
+      author: "User 1",
+      likes: 5,
+    });
+  });
+
+  test("find most favorite blog", () => {
+    const result = listHelper.favoriteBlog(listWithManyBlogs);
+    expect(result).toEqual({
+      title: "Blog with High likes ",
+      author: "Top user",
+      likes: 7,
+    });
+  });
+});

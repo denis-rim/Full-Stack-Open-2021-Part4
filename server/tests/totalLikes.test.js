@@ -107,7 +107,7 @@ describe("the author who has the largest amount of blogs", () => {
   });
 });
 
-describe("the author with largets amount of likes", () => {
+describe("the author with larges amount of likes", () => {
   test("of empty list is zero", () => {
     const result = listHelper.mostLikes(listWithEmptyBlogs);
     expect(result).toEqual([]);

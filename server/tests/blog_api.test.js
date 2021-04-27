@@ -16,65 +16,69 @@ beforeEach(async () => {
   }
 });
 
-test("blogs in JSON format", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("when there is initially some notes saved", () => {
+  test("blogs in JSON format", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("all blogs are returned", async () => {
+    const response = await api.get("/api/blogs");
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test("unique identifier property of the blog posts is named id", async () => {
+    const response = await api.get("/api/blogs");
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test("correct amount of blogs", async () => {
-  const response = await api.get("/api/blogs");
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
-});
+describe("adding a new blog", () => {
+  test("a blog post can be added", async () => {
+    const newBlog = {
+      title: "Added blog post",
+      author: "Daniel Elias",
+      url: "https://danielelias.org",
+      likes: 0,
+    };
 
-test("unique identifier property of the blog posts is named id", async () => {
-  const response = await api.get("/api/blogs");
-  expect(response.body[0].id).toBeDefined();
-});
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
 
-test("a blog post can be added", async () => {
-  const newBlog = {
-    title: "Added blog post",
-    author: "Daniel Elias",
-    url: "https://danielelias.org",
-    likes: 0,
-  };
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+    const contents = blogsAtEnd.map((n) => n.title);
+    expect(contents).toContain("Added blog post");
+  });
 
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+  test("a blog post with missing likes field set likes by default to 0", async () => {
+    const newBlog = {
+      title: "Added blog post without likes",
+      author: "Daniel Elias",
+      url: "https://danielelias.org",
+    };
 
-  const contents = blogsAtEnd.map((n) => n.title);
-  expect(contents).toContain("Added blog post");
-});
+    const response = await api.post("/api/blogs").send(newBlog);
 
-test("a blog post with missing likes field set likes by default to 0", async () => {
-  const newBlog = {
-    title: "Added blog post without likes",
-    author: "Daniel Elias",
-    url: "https://danielelias.org",
-  };
+    expect(response.body.likes).toEqual(0);
+  });
 
-  const response = await api.post("/api/blogs").send(newBlog);
+  test("a blog post with missing author and url fields throw 400 error", async () => {
+    const newBlog = {
+      author: "Daniel Elias",
+      likes: 0,
+    };
 
-  expect(response.body.likes).toEqual(0);
-});
+    const response = await api.post("/api/blogs").send(newBlog);
 
-test("a blog post with missing author and url fields throw 400 error", async () => {
-  const newBlog = {
-    author: "Daniel Elias",
-    likes: 0,
-  };
-
-  const response = await api.post("/api/blogs").send(newBlog);
-
-  expect(response.status).toEqual(400);
+    expect(response.status).toEqual(400);
+  });
 });
 
 describe("deletion of a blog", () => {
@@ -91,6 +95,22 @@ describe("deletion of a blog", () => {
     const titles = blogsAtEnd.map((r) => r.title);
 
     expect(titles).not.toContain(blogToDelete.title);
+  });
+});
+
+describe("updating a specific blog", () => {
+  test("blogs like updated successfully", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const firstBlog = blogsAtStart[0];
+
+    firstBlog.likes = 1;
+
+    const response = await api
+      .put(`/api/blogs/${firstBlog.id}`)
+      .send(firstBlog)
+      .expect(200);
+
+    expect(response.body.likes).toEqual(1);
   });
 });
 

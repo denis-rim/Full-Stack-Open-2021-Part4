@@ -66,6 +66,17 @@ test("a blog post with missing likes field set likes by default to 0", async () 
   expect(response.body.likes).toEqual(0);
 });
 
+test("a blog post with missing author and url fields throw 400 error", async () => {
+  const newBlog = {
+    author: "Daniel Elias",
+    likes: 0,
+  };
+
+  const response = await api.post("/api/blogs").send(newBlog);
+
+  expect(response.status).toEqual(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

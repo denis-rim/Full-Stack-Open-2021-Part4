@@ -9,6 +9,10 @@ postRouter.get("/", async (request, response) => {
 postRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
 
+  if (!title && !url) {
+    return response.status(400).json({});
+  }
+
   const blog = new Blog({
     title,
     author,

@@ -16,13 +16,21 @@ beforeEach(async () => {
   }
 });
 
-test("correct amount of blogs in JSON format", async () => {
+test("blogs in JSON format", async () => {
   const response = await api
     .get("/api/blogs")
     .expect(200)
     .expect("Content-Type", /application\/json/);
+});
 
+test("correct amount of blogs", async () => {
+  const response = await api.get("/api/blogs");
   expect(response.body).toHaveLength(helper.initialBlogs.length);
+});
+
+test("unique identifier property of the blog posts is named id", async () => {
+  const response = await api.get("/api/blogs");
+  expect(response.body[0].id).toBeDefined();
 });
 
 afterAll(() => {

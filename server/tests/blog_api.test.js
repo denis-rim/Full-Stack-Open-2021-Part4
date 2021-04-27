@@ -54,6 +54,18 @@ test("a blog post can be added", async () => {
   expect(contents).toContain("Added blog post");
 });
 
+test("a blog post with missing likes field set likes by default to 0", async () => {
+  const newBlog = {
+    title: "Added blog post without likes",
+    author: "Daniel Elias",
+    url: "https://danielelias.org",
+  };
+
+  const response = await api.post("/api/blogs").send(newBlog);
+
+  expect(response.body.likes).toEqual(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

@@ -1,9 +1,10 @@
-const config = require("./utils/config");
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const mongoose = require("mongoose");
-const postRouter = require("./controllers/blogs");
+const config = require('./utils/config')
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const mongoose = require('mongoose')
+const postRouter = require('./controllers/blogs')
+const userRouter = require('./controllers/users')
 
 mongoose
   .connect(config.MONGODB_URI, {
@@ -13,15 +14,16 @@ mongoose
     useCreateIndex: true,
   })
   .then(() => {
-    console.log("connected to MongoDB");
+    console.log('connected to MongoDB')
   })
   .catch((error) => {
-    console.log("error connecting to MongoDB:", error.message);
-  });
+    console.log('error connecting to MongoDB:', error.message)
+  })
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
-app.use("/api/blogs", postRouter);
+app.use('/api/blogs', postRouter)
+app.use('/api/users', userRouter)
 
-module.exports = app;
+module.exports = app

@@ -7,7 +7,7 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
-    "test:api": "cross-env NODE_ENV=test jest --verbose --runInBand -- tests/user_api.test.js"
+    "test:api": "cross-env NODE_ENV=test jest --verbose --runInBand -- tests/blog_api.test.js"
   },
   "keywords": [],
   "author": "Denis Mazurchuk",
